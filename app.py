@@ -30,7 +30,7 @@ client = Groq(api_key=GROQ_API_KEY)
 # -----------------------------
 # 2. Load FAQ dataset (3000 rows)
 # -----------------------------
-DATA_PATH = "Data/multi_country_real_colleges_faq_with_meta.csv"
+DATA_PATH = "Data/galgotias_faq_3000.csv"
 
 @st.cache_data
 def load_faq_data(path: str):
@@ -47,31 +47,14 @@ def build_rag_index(df: pd.DataFrame):
     meta = []
 
     for _, row in df.iterrows():
-        college = row["college_name"]
-        country = row["country"]
-        ctype = row["type"]
         q = str(row["question"])
         a = str(row["answer"])
-
-        # text that will be embedded
-        text = (
-            f"College: {college} ({country}, {ctype})\n"
-            f"Q: {q}\n"
-            f"A: {a}"
-        )
+        text = f"Q: {q}\nA: {a}"
         docs.append(text)
-
-        # metadata (for future use / display)
-        meta.append({
-            "college_name": college,
-            "country": country,
-            "type": ctype,
-        })
+        meta.append({"id": int(row["id"]), "category": row["category"]})
 
     embed_model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
-    embeddings = embed_model.encode(
-        docs, show_progress_bar=False, convert_to_numpy=True
-    ).astype("float32")
+    embeddings = embed_model.encode(docs, show_progress_bar=False, convert_to_numpy=True)
 
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
