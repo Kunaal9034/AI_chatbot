@@ -1,0 +1,9 @@
+numpy~=2.3.5
+pandas~=2.3.3
+faiss-cpu~=1.13.1
+streamlit~=1.52.1
+sentence-transformers~=5.1.2
+dotenv~=0.9.9
+python-dotenv~=1.2.1
+groq~=0.37.1
+openai~=2.9.0

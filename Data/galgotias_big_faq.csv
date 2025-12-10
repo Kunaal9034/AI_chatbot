@@ -1,0 +1,60 @@
+id,category,question,answer
+1,admission,What is the admission process for B.Tech?,"Admissions for B.Tech at Galgotias University are based on JEE Main scores or the Galgotias University Entrance Exam (GUEE). Candidates must apply online, upload required documents, and participate in counselling rounds."
+2,admission,What is the minimum eligibility for B.Tech?,"Candidates must have passed 10+2 or equivalent with at least 50% aggregate marks in Physics, Mathematics, and one of Chemistry, Computer Science, or Electronics."
+3,admission,Is there any lateral entry option for B.Tech?,"Yes, diploma holders in relevant engineering disciplines can apply for direct second-year admission through the lateral entry scheme as per university norms."
+4,admission,What is the admission process for MBA?,"Admission to MBA is based on scores in CAT, MAT, CMAT, or the Galgotias University Management Aptitude Test followed by a personal interview."
+5,admission,Is there any entrance exam conducted by the university?,"Yes, Galgotias University conducts its own entrance exams such as GUEE for engineering and other programs if national-level scores are not available."
+6,admission,Can I apply for multiple courses at the same time?,"Yes, you can apply for multiple courses by filling separate preferences in the online application form and paying the applicable fee."
+7,admission,How can international students apply?,"International students can apply through the International Admissions Cell by submitting academic transcripts, passport copy, English proficiency scores, and other required documents."
+8,admission,Is there an online admission facility?,"Yes, the entire admission process including application, document upload, and fee payment can be completed online through the university website."
+9,admission,What is the last date to apply for admissions?,The last date to apply varies by program and is announced on the university website every academic year.
+10,fees,What is the annual fee for B.Tech CSE?,"The annual academic fee for B.Tech in Computer Science and Engineering is approximately ₹1,60,000, excluding hostel, transport, and examination fees."
+11,fees,How can I pay my fees?,"Fees can be paid online via net banking, credit or debit card, UPI, or offline through bank challan at designated bank branches."
+12,fees,Is the fee refundable if I cancel my admission?,"Fee refund is processed as per the UGC and university refund policy, depending on the date of withdrawal relative to the course commencement."
+13,fees,Are there any additional charges apart from tuition fees?,"Yes, students may need to pay examination fees, registration fees, hostel fees, transport fees, and other applicable charges."
+14,fees,Does the university offer installment facility for fee payment?,"In certain cases, the university may allow fee payment in installments upon formal request and approval from the accounts department."
+15,fees,What is the mode of payment for hostel fee?,"Hostel fee can be paid online along with academic fees or separately via bank transfer, depending on the instructions given at the time of allotment."
+16,fees,Is there a caution money deposit?,"Yes, a one-time refundable caution money deposit is collected at the time of admission, which is refunded upon completion of the program after clearance."
+17,hostel,Is hostel facility available for students?,"Yes, Galgotias University provides separate hostel facilities for boys and girls with both AC and non-AC room options."
+18,hostel,What facilities are provided in the hostels?,"Hostels include furnished rooms, Wi-Fi, 24x7 security, CCTV, common rooms, television, indoor games, laundry, and medical support."
+19,hostel,Are hostel rooms single or shared?,"Both single, double, and triple sharing room options are available depending on the hostel block and fee category."
+20,hostel,Is hostel accommodation compulsory?,"No, hostel accommodation is optional. Students may choose to stay in hostels or make their own arrangements outside the campus."
+21,hostel,How is hostel allotment done?,"Hostel allotment is done on a first-come, first-served basis after payment of hostel fee and completion of formalities."
+22,hostel,Are guests allowed to stay in the hostel?,"Guests are generally not allowed to stay in student hostels. However, separate guest house facilities may be available for parents or guardians."
+23,hostel,Is there a hostel curfew time?,"Yes, hostels follow a fixed entry time in the evening for safety and discipline, and students are expected to adhere to the hostel timing rules."
+24,hostel,Is mess facility available in the hostel?,"Yes, each hostel has an attached mess that provides hygienic vegetarian and non-vegetarian meals as per the decided menu."
+25,transport,Does the university provide transport facilities?,"Yes, the university operates a fleet of buses that connect the campus with major locations across Delhi, Noida, Greater Noida, and Ghaziabad."
+26,transport,How can I avail the bus facility?,Students can register for the bus facility at the beginning of the semester by filling the transport form and paying the applicable fee.
+27,transport,Can I change my bus route in the middle of the semester?,Route changes may be permitted subject to seat availability and approval from the transport office.
+28,transport,What happens if a bus is delayed?,"In case of bus delay, students are informed through official communication channels, and alternative arrangements may be provided if required."
+29,placements,How are the placements at Galgotias University?,The university has a strong placement record with a high percentage of students placed each year in reputed national and multinational companies.
+30,placements,Which companies visit the campus for recruitment?,"Companies such as Infosys, Wipro, TCS, Cognizant, Accenture, IBM, Amazon, Flipkart, HCL, Tech Mahindra, and many others visit the campus regularly."
+31,placements,What is the highest package offered on campus?,The highest package varies each year and has gone beyond ₹30 LPA in certain engineering and computer science programs.
+32,placements,What is the average package for B.Tech graduates?,"The average package for B.Tech graduates typically ranges between ₹4 LPA and ₹6 LPA, depending on the branch and market trends."
+33,placements,Does the university provide placement training?,"Yes, dedicated placement training including aptitude sessions, soft skills training, technical workshops, and mock interviews is provided to students."
+34,placements,Is internship support provided by the university?,The Career Services department assists students in securing internships with industry partners as part of their academic and career development.
+35,academics,What is the academic structure followed by the university?,The university follows a semester-based academic structure with continuous internal assessment and end-semester examinations.
+36,academics,What is the minimum attendance requirement?,Students are required to maintain a minimum of 75% attendance in each course to be eligible for appearing in end-semester examinations.
+37,academics,Does the university follow a choice-based credit system?,"Yes, a choice-based credit system (CBCS) is followed that allows students to choose electives and interdisciplinary courses."
+38,academics,Are laboratory sessions compulsory?,"Yes, all scheduled laboratory sessions are compulsory and form an essential part of the continuous assessment."
+39,academics,Does the university offer value-added or certification courses?,"Yes, various value-added, add-on, and industry certification courses are offered to enhance the skills and employability of students."
+40,academics,What is the grading system used?,The university uses a letter-grade based grading system with grade points to calculate semester and cumulative grade point averages.
+41,scholarship,What types of scholarships are available?,"Scholarships are offered based on academic merit, performance in entrance exams, sports achievements, and for students from economically weaker sections."
+42,scholarship,How can I apply for a scholarship?,"Students can apply for scholarships at the time of admission by submitting relevant documents, or later through the scholarship portal as per notifications."
+43,scholarship,Are scholarships renewed every year?,"Most scholarships are renewable each year, subject to the student maintaining a specified CGPA and satisfactory conduct."
+44,scholarship,Can a student avail more than one scholarship?,"Generally, a student can avail only one major scholarship at a time; however, this is subject to the specific rules of the scholarship scheme."
+45,exam,How are internal assessments conducted?,"Internal assessments include class tests, quizzes, assignments, presentations, and practical evaluations conducted throughout the semester."
+46,exam,When are end-semester exams held?,End-semester examinations are usually conducted at the end of each semester as per the academic calendar notified by the university.
+47,exam,What happens if a student misses an exam?,"If a student misses an exam due to genuine reasons such as medical emergencies, they may apply for a makeup exam as per university rules."
+48,exam,Are re-evaluation or rechecking options available?,"Yes, students can apply for re-evaluation or rechecking of answer scripts within the stipulated time frame by paying the prescribed fee."
+49,general,Where is Galgotias University located?,"Galgotias University is located on the Yamuna Expressway near the Buddh International Circuit in Greater Noida, Uttar Pradesh, India."
+50,general,What are the main contact details of the university?,"The main contact details including phone numbers, email addresses, and enquiry form are available on the Contact Us section of the official website."
+51,general,Does the campus have Wi-Fi facilities?,"Yes, the campus is Wi-Fi enabled and students can access internet facilities in academic blocks, hostels, and common areas."
+52,general,What co-curricular activities are available?,"Various technical clubs, cultural societies, sports teams, and hobby groups conduct regular events, competitions, and workshops on campus."
+53,general,Does the university organize annual fests?,"Yes, the university organizes annual technical and cultural fests, sports meets, and other large-scale student events."
+54,library,What facilities are available in the central library?,"The central library offers a large collection of books, journals, e-resources, digital library access, reading halls, and reference services."
+55,library,What are the library timings?,"Library timings are usually from morning to late evening on working days, with special hours during examinations."
+56,library,Can students access e-resources from outside the campus?,Certain e-resources and databases can be accessed off-campus using remote login credentials provided to students.
+57,health,Is medical facility available on campus?,"Yes, an on-campus medical center with qualified doctors and nursing staff is available to provide basic healthcare services to students and staff."
+58,health,Does the university have tie-ups with hospitals?,The university has tie-ups with nearby multispecialty hospitals for advanced medical treatment in case of emergencies.
+59,health,Are there any counseling services for students?,"Yes, the university provides counseling and mentoring services to support the emotional and psychological well-being of students."
