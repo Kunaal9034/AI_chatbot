@@ -133,7 +133,7 @@ st.title("🤖 AI-Powered College Enquiry Chatbot ")
 
 mode = st.radio(
     "Select mode:",
-    ["Colleges FAQ (RAG)", "General Chat (ChatGPT-like)"],
+    ["Galgotias FAQ (RAG)", "General Chat (ChatGPT-like)"],
     horizontal=True,
 )
 
