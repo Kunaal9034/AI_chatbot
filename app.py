@@ -133,7 +133,7 @@ st.title("🤖 AI-Powered College Enquiry Chatbot ")
 
 mode = st.radio(
     "Select mode:",
-    ["Galgotias FAQ (RAG)", "General Chat (ChatGPT-like)"],
+    ["Collages FAQ (RAG)", "General Chat (ChatGPT-like)"],
     horizontal=True,
 )
 
@@ -156,7 +156,7 @@ if user_input:
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
     # 2. Generate answer based on selected mode
-    if mode == "Galgotias FAQ (RAG)":
+    if mode == "Collages FAQ (RAG)":
         answer_text = generate_rag_answer(user_input, k=5)
     else:
         # General chat: pass full history
