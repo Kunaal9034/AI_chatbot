@@ -30,7 +30,7 @@ client = Groq(api_key=GROQ_API_KEY)
 # -----------------------------
 # 2. Load FAQ dataset (3000 rows)
 # -----------------------------
-DATA_PATH = "Data/galgotias_faq_3000.csv"
+DATA_PATH = "Data/multi_country_real_colleges_faq_with_meta.csv"
 
 @st.cache_data
 def load_faq_data(path: str):
