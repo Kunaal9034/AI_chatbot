@@ -47,14 +47,31 @@ def build_rag_index(df: pd.DataFrame):
     meta = []
 
     for _, row in df.iterrows():
+        college = row["college_name"]
+        country = row["country"]
+        ctype = row["type"]
         q = str(row["question"])
         a = str(row["answer"])
-        text = f"Q: {q}\nA: {a}"
+
+        # text that will be embedded
+        text = (
+            f"College: {college} ({country}, {ctype})\n"
+            f"Q: {q}\n"
+            f"A: {a}"
+        )
         docs.append(text)
-        meta.append({"id": int(row["id"]), "category": row["category"]})
+
+        # metadata (for future use / display)
+        meta.append({
+            "college_name": college,
+            "country": country,
+            "type": ctype,
+        })
 
     embed_model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
-    embeddings = embed_model.encode(docs, show_progress_bar=False, convert_to_numpy=True)
+    embeddings = embed_model.encode(
+        docs, show_progress_bar=False, convert_to_numpy=True
+    ).astype("float32")
 
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
