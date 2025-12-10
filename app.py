@@ -1,5 +1,4 @@
 import os
-
 import faiss
 import pandas as pd
 import streamlit as st
@@ -8,7 +7,7 @@ from groq import Groq
 from sentence_transformers import SentenceTransformer
 
 # ------------------------------------------------
-# 0. Page config + Global CSS (Sidebar Commander Theme)
+# 0. Page config + CYBERPUNK CSS
 # ------------------------------------------------
 st.set_page_config(
     page_title="AI-Powered College Enquiry Chatbot",
@@ -16,162 +15,196 @@ st.set_page_config(
     layout="wide",
 )
 
-# New CSS for Sidebar layout and Avatars
-custom_css = """
+cyberpunk_css = """
 <style>
-/* Hide default Streamlit chrome */
+/* Import Monospace Font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+/* Reset & Global Styles */
+:root {
+    --neon-green: #39ff14;
+    --neon-cyan: #00ffff;
+    --bg-black: #000000;
+}
+
+/* Main container background and font */
+[data-testid="stAppViewContainer"] {
+    background-color: var(--bg-black) !important;
+    font-family: 'Roboto Mono', monospace !important;
+    color: var(--neon-green);
+}
+[data-testid="stHeader"] {
+    background-color: transparent;
+}
+
+/* Hide default elements */
 #MainMenu {visibility: hidden;}
-header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Main content area background */
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(to bottom right, #0f172a, #020617);
-    color: #e5e7eb;
-}
-
-/* Sidebar background & border */
-[data-testid="stSidebar"] {
-    background-color: #020617;
-    border-right: 1px solid #1f2937;
-}
-
-/* Sidebar Title */
-[data-testid="stSidebar"] h1 {
+/* --- Centered, Glowing Title --- */
+h1 {
     text-align: center;
-    font-weight: 700;
-    font-size: 1.4rem;
-    margin-bottom: 1.5rem;
-    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+    border: 3px solid var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green), inset 0 0 10px var(--neon-green);
+    padding: 15px 30px;
+    display: inline-block;
+    margin-top: 1rem;
+    /* Angular cut corners via clip-path */
+    clip-path: polygon(5% 0, 95% 0, 100% 20%, 100% 80%, 95% 100%, 5% 100%, 0 80%, 0 20%);
 }
-
-/* --- Radio Buttons in Sidebar --- */
-/* Container for radio options stack */
-div[data-testid="stRadio"] > div {
-    background: transparent;
-    border: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* Space between pills */
-}
-
-/* Radio labels styled as stacked pills */
-div[data-testid="stRadio"] label {
-    background: #0b1120;
-    border-radius: 8px;
-    border: 1px solid #1f2937;
-    padding: 0.75rem 1rem !important;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s ease-in-out;
-    width: 100%;
+/* Center the title container */
+.stMainBlockContainer > div:first-child {
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-bottom: 2rem;
 }
 
-/* Hide default radio dot */
+/* --- Glowing Radio Buttons (Mode Selection) --- */
+div[data-testid="stRadio"] > div {
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+/* Default radio label style (inactive) */
+div[data-testid="stRadio"] label {
+    background: #000;
+    border: 2px solid var(--neon-green);
+    color: var(--neon-green);
+    font-family: 'Roboto Mono', monospace !important;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem !important;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px var(--neon-green);
+    /* Squarish angular shape */
+    clip-path: polygon(10% 0, 90% 0, 100% 30%, 100% 70%, 90% 100%, 10% 100%, 0 70%, 0 30%);
+}
+
+/* Hide default dot */
 div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
     display: none;
 }
 
-/* Active pill state */
+/* Active/Checked state */
 div[data-testid="stRadio"] label:has(input:checked) {
-    background: #1e293b;
-    border-color: #38bdf8;
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 20px var(--neon-green), inset 0 0 10px var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green);
+    font-weight: 700;
+}
+/* Hover state */
+div[data-testid="stRadio"] label:hover {
+    box-shadow: 0 0 25px var(--neon-green);
 }
 
-/* Inactive pill state */
-div[data-testid="stRadio"] label:not(:has(input:checked)) {
-    color: #9ca3af;
-}
-div[data-testid="stRadio"] label:not(:has(input:checked)):hover {
-    border-color: #4b5563;
-    background: #111827;
-}
-
-
-/* --- Chat Components with Avatars --- */
-
-/* Flex container for a chat row (Avatar + Bubble) */
-.chat-container {
+/* --- Chat Layout & Avatars --- */
+.chat-row {
     display: flex;
-    align-items: flex-start; /* Align items to the top */
-    margin: 1.2rem 0;
-    gap: 0.75rem;
+    align-items: flex-start; /* Align to top */
+    margin: 2rem auto;
+    gap: 1.5rem;
+    max-width: 900px; /* Keep chat centered on wide screens */
 }
+.chat-row.user { flex-direction: row-reverse; }
+.chat-row.assistant { flex-direction: row; }
 
-/* User message: reverse order to put avatar on right */
-.chat-container.user {
-    flex-direction: row-reverse;
-}
-
-/* Assistant message: normal order (avatar on left) */
-.chat-container.assistant {
-    flex-direction: row;
-}
-
-/* Avatar circle styling */
-.avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
+/* Angular Avatar Container */
+.avatar-box {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0; /* Prevent avatar from squishing */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid;
+    background: #000;
+    font-size: 2rem;
+    /* Hexagonal/Angular shape */
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+.avatar-box.user {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green);
+    color: var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-green);
+}
+.avatar-box.assistant {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px var(--neon-cyan);
 }
 
-/* Specific avatar colors */
-.avatar.user { background-color: #3b82f6; } /* Blue for user */
-.avatar.assistant { background-color: #10b981; } /* Green for bot */
-
-/* Chat bubble styling */
-.chat-bubble {
-    border-radius: 16px;
-    padding: 0.9rem 1.1rem;
-    max-width: 80%; /* Do not span full width */
-    line-height: 1.5;
+/* --- Neon Chat Bubbles --- */
+.neon-bubble {
+    padding: 1.2rem 1.5rem;
+    border: 2px solid;
+    background: #000;
+    max-width: 80%;
+    line-height: 1.4;
     position: relative;
+    /* Angular speech bubble shape */
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 5% 100%, 0 85%);
 }
 
-/* User bubble style */
-.chat-bubble.user {
-    background: #0b1120;
-    border: 1px solid #1f2937;
-    border-bottom-right-radius: 4px; /* Subtle corner tweak */
+.neon-bubble.user {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    /* Green glow inset and outset */
+    box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.3), 0 0 15px rgba(57, 255, 20, 0.4);
+    text-shadow: 0 0 2px rgba(57, 255, 20, 0.5);
 }
 
-/* Assistant bubble style */
-.chat-bubble.assistant {
-    background: #020617;
-    border: 1px solid #374151;
-    border-bottom-left-radius: 4px; /* Subtle corner tweak */
+.neon-bubble.assistant {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    /* Cyan glow inset and outset */
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.3), 0 0 15px rgba(0, 255, 255, 0.4);
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
-/* --- Chat Input Styling --- */
-/* Make input text area rounded and dark */
+/* --- Glowing Chat Input --- */
+/* Target the fixed container at bottom */
+.stChatInput {
+    bottom: 20px !important; /* Lift it slightly */
+}
+/* The actual input box container */
+[data-testid="stChatInput"] {
+    border: 3px solid var(--neon-green) !important;
+    background: #000 !important;
+    border-radius: 0px !important; /* Square corners */
+    /* Intense green glow */
+    box-shadow: 0 0 20px var(--neon-green), inset 0 0 10px var(--neon-green) !important;
+    /* Angular cut corners */
+    clip-path: polygon(2% 0, 98% 0, 100% 20%, 100% 80%, 98% 100%, 2% 100%, 0 80%, 0 20%);
+}
+
+/* The textarea inside */
 div[data-baseweb="textarea"] > textarea {
-    border-radius: 24px !important;
-    background-color: #0b1120 !important;
-    border: 1px solid #374151 !important;
-    color: #e5e7eb !important;
-    padding: 0.8rem 1.2rem !important;
+    background: transparent !important;
+    color: var(--neon-green) !important;
+    font-family: 'Roboto Mono', monospace !important;
+    caret-color: var(--neon-green); /* The typing cursor */
 }
-/* Focus state for input */
-div[data-baseweb="textarea"] > textarea:focus {
-    border-color: #38bdf8 !important;
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+/* Placeholder text color */
+div[data-baseweb="textarea"] > textarea::placeholder {
+    color: rgba(57, 255, 20, 0.5) !important;
+}
+/* The send button */
+button[data-testid="stChatInputSubmitButton"] {
+    color: var(--neon-green) !important;
+}
+button[data-testid="stChatInputSubmitButton"]:hover {
+    text-shadow: 0 0 15px var(--neon-green);
 }
 </style>
 """
-st.markdown(custom_css, unsafe_allow_html=True)
+st.markdown(cyberpunk_css, unsafe_allow_html=True)
 
 # ------------------------------------------------
 # 1. Env + Groq client
@@ -180,7 +213,7 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 if not GROQ_API_KEY:
-    st.error("GROQ_API_KEY not found in .env file. Please set it.")
+    st.error("GROQ_API_KEY not found in .env file.")
     st.stop()
 
 client = Groq(api_key=GROQ_API_KEY)
@@ -188,106 +221,75 @@ client = Groq(api_key=GROQ_API_KEY)
 # ------------------------------------------------
 # 2. Load FAQ dataset
 # ------------------------------------------------
-# Replace with your actual CSV path
 DATA_PATH = "Data/galgotias_faq_3000.csv"
 
 @st.cache_data
 def load_faq_data(path: str):
     if not os.path.exists(path):
-        st.warning(f"Data file not found at {path}. RAG mode will not work.")
+        st.warning(f"Data file not found: {path}")
         return pd.DataFrame(columns=["id", "question", "answer", "category"])
     return pd.read_csv(path)
 
 faq_df = load_faq_data(DATA_PATH)
 
 # ------------------------------------------------
-# 3. Build docs + embeddings + FAISS (for RAG mode)
+# 3. Build RAG index
 # ------------------------------------------------
 @st.cache_resource
 def build_rag_index(df: pd.DataFrame):
     if df.empty:
         return [], [], None, None
-
     docs = []
     meta = []
-
     for _, row in df.iterrows():
-        q = str(row["question"])
-        a = str(row["answer"])
-        text = f"Q: {q}\nA: {a}"
+        text = f"Q: {str(row['question'])}\nA: {str(row['answer'])}"
         docs.append(text)
-        meta.append({"id": row.get("id"), "category": row.get("category")})
+        meta.append({"id": row.get("id")})
 
     embed_model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
     embeddings = embed_model.encode(
         docs, show_progress_bar=False, convert_to_numpy=True
     ).astype("float32")
-
-    dim = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dim)
+    index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings)
-
     return docs, meta, embed_model, index
 
 docs, metadata, embed_model, index = build_rag_index(faq_df)
 
 # ------------------------------------------------
-# 4. RAG helper (Colleges FAQ mode)
+# 4. RAG & Chat Helpers
 # ------------------------------------------------
-def retrieve_context(query: str, k: int = 5):
+def generate_rag_answer(query: str, k: int = 5) -> str:
     if embed_model is None or index is None:
-        return []
+        return "RAG system not initialized."
     q_emb = embed_model.encode([query], convert_to_numpy=True)
     distances, indices = index.search(q_emb, k)
-    return [docs[i] for i in indices[0]]
-
-def generate_rag_answer(query: str, k: int = 5) -> str:
-    context_chunks = retrieve_context(query, k=k)
-    if not context_chunks:
-        return "I'm sorry, I couldn't find any relevant information in the FAQ database to answer your question."
-
+    context_chunks = [docs[i] for i in indices[0]]
     context = "\n\n".join(context_chunks)
 
     prompt = f"""
-You are an enquiry bot for Galgotias University.
-Primarily use ONLY the information in the context to answer the question.
-If the answer is clearly not in the context, then you may answer using your own knowledge,
-but mention that the information is approximate.
+You are a futuristic enquiry bot for Galgotias University.
+Use ONLY the provided CONTEXT to answer. If the answer is not present, state that data is unavailable in the archives.
 
-CONTEXT:
+CONTEXT ARCHIVE:
 {context}
 
-QUESTION:
+USER QUERY:
 {query}
 
-ANSWER:
+TERMINAL OUTPUT:
 """
-
     resp = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[{"role": "user", "content": prompt}],
     )
     return resp.choices[0].message.content
 
-# ------------------------------------------------
-# 5. General chat helper (ChatGPT-like mode)
-# ------------------------------------------------
 def generate_general_answer(chat_history: list[dict]) -> str:
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are a helpful AI assistant like ChatGPT. "
-                "You can answer general questions about programming, maths, reasoning, etc. "
-                "If user asks specifically about Galgotias University, answer as best as you can "
-                "even without the FAQ context."
-            ),
-        }
-    ]
-    # Filter out tool calls or other non-text content if necessary for your API
-    text_history = [{"role": msg["role"], "content": msg["content"]} for msg in chat_history if isinstance(msg["content"], str)]
-    messages += text_history
-
+    messages = [{"role": "system", "content": "You are a helpful AI assistant with a futuristic, terminal-like persona."}]
+    # Clean history for API
+    clean_history = [{"role": m["role"], "content": m["content"]} for m in chat_history]
+    messages += clean_history
     resp = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=messages,
@@ -295,83 +297,72 @@ def generate_general_answer(chat_history: list[dict]) -> str:
     return resp.choices[0].message.content
 
 # ------------------------------------------------
-# 6. Streamlit Chat UI
+# 5. Streamlit Chat UI
 # ------------------------------------------------
 
-# --- Sidebar Controls ---
-with st.sidebar:
-    st.title("🤖 College Enquiry Bot")
-    st.markdown("---")
-    st.write("Select Conversation Mode:")
-    # Vertical radio buttons for sidebar
-    mode = st.radio(
-        "Mode Selection", # Hidden label due to CSS
-        ["Colleges FAQ (RAG)", "General Chat"],
-        index=0,
-        label_visibility="collapsed"
-    )
-    st.markdown("---")
-    st.markdown(
-        """
-        <div style='text-align: center; color: #9ca3af; font-size: 0.8rem;'>
-            Powered by Llama 3 & Groq
-        </div>
-        """, unsafe_allow_html=True
-    )
+# Title Area
+st.title("AI-Powered College Enquiry Chatbot")
 
+# Mode Selector Pills
+st.write("") # Spacer
+mode = st.radio(
+    "Select Mode",
+    ["Colleges FAQ (RAG)", "General Chat"],
+    horizontal=True,
+    label_visibility="collapsed"
+)
+st.write("") # Spacer
 
-# --- Main Chat Area ---
-
-# Session state for chat messages
+# Session State
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Helper to render chat messages with avatars
-def render_chat_message(role, content):
-    # Choose avatar icon and CSS classes based on role
+# --- Custom Render Function for Neon Cyberpunk style ---
+def render_neon_message(role, content):
     if role == "user":
-        avatar_icon = "👤"
-        container_class = "user"
+        row_class = "user"
         avatar_class = "user"
         bubble_class = "user"
+        # Using emojis that fit the aesthetic
+        avatar_icon = "🧑‍💻"
     else:
-        avatar_icon = "🤖"
-        container_class = "assistant"
+        row_class = "assistant"
         avatar_class = "assistant"
         bubble_class = "assistant"
+        avatar_icon = "🤖"
 
-    # Build the HTML structure
     html = f"""
-    <div class="chat-container {container_class}">
-        <div class="avatar {avatar_class}">{avatar_icon}</div>
-        <div class="chat-bubble {bubble_class}">{content}</div>
+    <div class="chat-row {row_class}">
+        <div class="avatar-box {avatar_class}">
+            <div>{avatar_icon}</div>
+        </div>
+        <div class="neon-bubble {bubble_class}">
+            {content}
+        </div>
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
 
-# Show chat history using the new render function
-for msg in st.session_state["messages"]:
-    render_chat_message(msg["role"], msg["content"])
 
-# Chat input
-user_input = st.chat_input("Type your message here...")
+# Display Chat History
+for msg in st.session_state["messages"]:
+    render_neon_message(msg["role"], msg["content"])
+
+# Chat Input
+user_input = st.chat_input("ENTER COMMAND...")
 
 if user_input:
-    # 1. Add and render user message immediately
+    # Render user msg instantly
     st.session_state["messages"].append({"role": "user", "content": user_input})
-    render_chat_message("user", user_input)
+    render_neon_message("user", user_input)
 
-    # 2. Generate answer based on selected mode
-    # Use a spinner to show activity while waiting for response
-    with st.spinner("Thinking..."):
+    # Generate Response
+    with st.spinner("PROCESSING..."):
         if mode == "Colleges FAQ (RAG)":
-            answer_text = generate_rag_answer(user_input, k=5)
+            answer_text = generate_rag_answer(user_input)
         else:
             answer_text = generate_general_answer(st.session_state["messages"])
 
-    # 3. Add and render assistant message
+    # Render assistant msg
     st.session_state["messages"].append({"role": "assistant", "content": answer_text})
-    render_chat_message("assistant", answer_text)
-
-    # Rerun to update state correctly if needed, though st.chat_input usually handles this.
-    # st.rerun()
+    render_neon_message("assistant", answer_text)
