@@ -8,7 +8,7 @@ from groq import Groq
 from sentence_transformers import SentenceTransformer
 
 # ------------------------------------------------
-# PAGE CONFIG + GLOBAL CSS
+# 0. Page config  + global CSS (dark ChatGPT style)
 # ------------------------------------------------
 st.set_page_config(
     page_title="AI-Powered College Enquiry Chatbot",
@@ -18,59 +18,53 @@ st.set_page_config(
 
 custom_css = """
 <style>
+/* Hide default Streamlit chrome */
 #MainMenu {visibility: hidden;}
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Background */
+/* App background */
 [data-testid="stAppViewContainer"] {
-    background: radial-gradient(circle at top left, #020617 0, #020617 60%, #000000 100%);
+    background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
     color: #e5e7eb;
 }
 
-/* Main centered wrapper (title + mode + chat) */
-.main-chat {
-    max-width: 900px;
-    margin: 0 auto;
-    padding-top: 2.5rem;
+/* Centered big title */
+h1 {
+    text-align: center;
+    font-weight: 700;
 }
 
-/* Title styling */
-.main-chat h1 {
-    text-align: left;
-    font-weight: 800;
-    font-size: 2.4rem;
-    letter-spacing: 0.02em;
-}
-
-/* Mode label */
-.mode-label {
-    margin-top: 2rem;
-    margin-bottom: 0.35rem;
-    font-size: 0.95rem;
-}
-
-/* Select box styling (mode dropdown) */
-.mode-selectbox div[data-baseweb="select"] {
+/* Mode selector container */
+div[data-testid="stRadio"] > div {
     background: #020617;
     border-radius: 999px;
     border: 1px solid #1f2937;
-    padding: 0.15rem 0.25rem;
-    color: #e5e7eb;
-}
-.mode-selectbox div[data-baseweb="select"] > div {
-    min-height: 3rem;
-}
-/* Selected value inside select */
-.mode-selectbox span {
-    font-size: 0.95rem;
+    padding: 0.25rem 0.5rem;
 }
 
-/* Thin separator line under mode */
-.chat-separator {
-    margin-top: 1.3rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #111827;
+/* Radio labels look like pills */
+div[data-testid="stRadio"] label {
+    border-radius: 999px;
+    padding: 0.6rem 1.6rem !important;
+    cursor: pointer;
+}
+
+/* Hide small radio dot */
+div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
+    display: none;
+}
+
+/* Active pill */
+div[data-testid="stRadio"] label:has(input:checked) {
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    color: #e5e7eb;
+}
+
+/* Inactive pill */
+div[data-testid="stRadio"] label:not(:has(input:checked)) {
+    color: #9ca3af;
 }
 
 /* Chat bubbles */
@@ -83,48 +77,41 @@ footer {visibility: hidden;}
     margin-bottom: 0.2rem;
 }
 .chat-user {
-    background: #020617;
-    border-radius: 18px;
+    background: #0b1120;
+    border-radius: 16px;
     padding: 0.9rem 1rem;
 }
 .chat-assistant {
     background: #020617;
-    border-radius: 18px;
+    border-radius: 16px;
     padding: 0.9rem 1rem;
     border: 1px solid #1f2937;
 }
 
-/* Chat input: pill shape + a bit lifted */
+/* Chat input a bit rounded */
 div[data-baseweb="textarea"] > textarea {
     border-radius: 999px !important;
-}
-.block-container {
-    padding-bottom: 6rem; /* space above bottom input */
 }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ------------------------------------------------
-# 1. Env + Groq client (works locally + Streamlit Cloud)
+# 1. Env + Groq client
 # ------------------------------------------------
-# Try Streamlit secrets first (for cloud)
-if "GROQ_API_KEY" in st.secrets:
-    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-else:
-    # Fallback: .env for local dev
-    load_dotenv()
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 if not GROQ_API_KEY:
-    raise ValueError("GROQ_API_KEY not found. Set in .env or Streamlit secrets.")
+    raise ValueError("GROQ_API_KEY not found in .env file")
 
 client = Groq(api_key=GROQ_API_KEY)
 
 # ------------------------------------------------
 # 2. Load FAQ dataset
 # ------------------------------------------------
-DATA_PATH = "Data/galgotias_faq_3000.csv"   # keep this as your 3000-row CSV
+# yahan apna CSV path rakho (abhi Galgotias 3000)
+DATA_PATH = "Data/galgotias_faq_3000.csv"
 
 @st.cache_data
 def load_faq_data(path: str):
@@ -217,33 +204,25 @@ def generate_general_answer(chat_history: list[dict]) -> str:
     return resp.choices[0].message.content
 
 # ------------------------------------------------
-# 6. Streamlit Chat UI (to match your first screenshot)
+# 6. Streamlit Chat UI
 # ------------------------------------------------
+st.title("🤖 AI-Powered College Enquiry Chatbot")
 
-# Start centered wrapper
-st.markdown('<div class="main-chat">', unsafe_allow_html=True)
+# Mode selector (pills)
+st.write("")
+mode = st.radio(
+    "Select mode:",
+    ["Colleges FAQ (RAG)", "General Chat (ChatGPT-like)"],
+    horizontal=True,
+    index=0,
+)
+st.markdown("---")
 
-st.markdown("<h1>🤖 AI-Powered College Enquiry Chatbot</h1>", unsafe_allow_html=True)
-
-# Mode dropdown
-st.markdown('<div class="mode-label">Select mode:</div>', unsafe_allow_html=True)
-with st.container():
-    st.markdown('<div class="mode-selectbox">', unsafe_allow_html=True)
-    mode = st.selectbox(
-        "",
-        ["Colleges FAQ (RAG)", "General Chat (ChatGPT-like)"],
-        key="mode_select",
-        label_visibility="collapsed",
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown('<div class="chat-separator"></div>', unsafe_allow_html=True)
-
-# Session state for chat history
+# Session state for chat messages
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Display existing messages as chat bubbles
+# Show chat history with custom bubbles
 for msg in st.session_state["messages"]:
     role = msg["role"]
     content = msg["content"]
@@ -268,12 +247,7 @@ for msg in st.session_state["messages"]:
             unsafe_allow_html=True,
         )
 
-# End wrapper (content part)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ------------------------------------------------
-# 7. Bottom chat input (full width)
-# ------------------------------------------------
+# Chat input
 user_input = st.chat_input("Ask any question...")
 
 if user_input:
@@ -293,14 +267,12 @@ if user_input:
         {"role": "assistant", "content": answer_text}
     )
 
-    # 4. Show latest assistant bubble (inside centered wrapper)
+    # 4. Show last assistant message bubble immediately
     st.markdown(
         f"""
-        <div class="main-chat">
-            <div class="chat-row">
-                <div class="chat-label">assistant</div>
-                <div class="chat-assistant">{answer_text}</div>
-            </div>
+        <div class="chat-row">
+            <div class="chat-label">assistant</div>
+            <div class="chat-assistant">{answer_text}</div>
         </div>
         """,
         unsafe_allow_html=True,
