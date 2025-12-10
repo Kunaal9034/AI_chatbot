@@ -8,6 +8,16 @@ from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 from groq import Groq
 
+
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # -----------------------------
 # 1. Env + Groq client
 # -----------------------------
